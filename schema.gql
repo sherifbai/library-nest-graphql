@@ -1,0 +1,90 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type GenreEntity {
+  id: Float!
+  name: String!
+}
+
+type AuthorEntity {
+  id: Float!
+  name: String!
+}
+
+type BookEntity {
+  id: Float!
+  name: String!
+  authors: [AuthorEntity!]!
+  genres: [GenreEntity!]!
+}
+
+type UserEntity {
+  id: Float!
+  username: String!
+  password: String!
+  role: String!
+}
+
+type TokenResponse {
+  access_token: String!
+}
+
+type Query {
+  getUser(id: Float!): UserEntity!
+  getUsers: [UserEntity!]!
+  getGenres: [GenreEntity!]!
+  getGenre(id: Float!): GenreEntity!
+  getAuthors: [AuthorEntity!]!
+  getAuthor(id: Float!): AuthorEntity!
+  getBooks: [BookEntity!]!
+  getBook(id: Float!): BookEntity!
+}
+
+type Mutation {
+  registration(createUserData: AuthUser!): UserEntity!
+  login(loginUserData: AuthUser!): TokenResponse!
+  makeManager(id: Float!): UserEntity!
+  createGenre(createGenreData: CreateGenreInput!): GenreEntity!
+  updateGenre(updateGenreInput: UpdateGenreInput!, id: Float!): GenreEntity!
+  deleteGenre(id: Float!): GenreEntity
+  createAuthor(createAuthorData: CreateAuthorInput!): AuthorEntity!
+  updateAuthor(updateAuthorData: UpdateAuthorInput!, id: Float!): AuthorEntity!
+  deleteAuthor(id: Float!): AuthorEntity
+  createBook(createBookData: CreateBookInput!): BookEntity!
+  updateBook(updateBookData: UpdateBookInput!, id: Float!): BookEntity!
+  deleteBook(id: Float!): BookEntity!
+}
+
+input AuthUser {
+  username: String!
+  password: String!
+}
+
+input CreateGenreInput {
+  name: String!
+}
+
+input UpdateGenreInput {
+  name: String!
+}
+
+input CreateAuthorInput {
+  name: String!
+}
+
+input UpdateAuthorInput {
+  name: String!
+}
+
+input CreateBookInput {
+  name: String!
+  genres: [Float!]!
+  authors: [Float!]!
+}
+
+input UpdateBookInput {
+  name: String!
+  genres: [Float!]!
+  authors: [Float!]!
+}
