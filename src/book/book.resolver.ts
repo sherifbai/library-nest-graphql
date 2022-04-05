@@ -44,14 +44,16 @@ export class BookResolver {
     @UseGuards(JWTAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN, UserRole.MANAGER)
     @Mutation(() => BookEntity, { nullable: true })
-    async deleteBook(@Args() { id }: BookArgs) {
+    async deleteBook(@Args() { id }: BookArgs): Promise<BookEntity> {
         const book = await this.bookService.getBookById({ id });
 
         if (!book) {
-            throw new NotFoundException();
+            throw new NotFoundException(BOOK_NOT_FOUND_ERROR);
         }
 
-        return await this.bookService.deleteBook({ id });
+        await this.bookService.deleteBook({ id });
+
+        return book;
     }
 
     @Query(() => [BookEntity])

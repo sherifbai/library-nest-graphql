@@ -1,4 +1,3 @@
-import { DeleteResult } from 'typeorm';
 import { AuthorArgs } from './dto/args/author.args';
 import { UpdateAuthorInput } from './dto/inputs/update.author.input';
 import { JWTAuthGuard } from './../user/guards/jwt.guard';
@@ -50,13 +49,27 @@ export class AuthorResolver {
             throw new NotFoundException(AUTHOR_NOT_FOUND_ERROR);
         }
 
+        const authorNameExist = await this.authorService.findAuthorByName({ name });
+
+        if (authorNameExist) {
+            throw new BadRequestException(AUTHOR_ALREADY_EXIST_ERROR);
+        }
+
         return await this.authorService.updateAuthor({ id }, { name });
     }
 
     @Roles(UserRole.ADMIN, UserRole.MANAGER)
     @Mutation(() => AuthorEntity, { nullable: true })
-    async deleteAuthor(@Args() { id }: AuthorArgs): Promise<DeleteResult> {
-        return await this.authorService.deleteAuthor({ id });
+    async deleteAuthor(@Args() { id }: AuthorArgs): Promise<AuthorEntity> {
+        const author = await this.authorService.findAuthorById({ id });
+        
+        if(!author) {
+            throw new NotFoundException(AUTHOR_NOT_FOUND_ERROR);
+        }
+
+        await this.authorService.deleteAuthor({ id });
+
+        return author;
     }
 
     @Roles(UserRole.ADMIN, UserRole.MANAGER)

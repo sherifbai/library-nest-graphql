@@ -51,19 +51,27 @@ export class GenreResolver {
             throw new NotFoundException(GENRE_NOT_FOUND_ERROR);
         }
 
+        const genreNameExist = await this.genreService.findGenreByName(name);
+
+        if (genreNameExist) {
+            throw new BadRequestException(GENRE_EXIST_ERROR);
+        }
+
         return await this.genreService.updateGenre({ name }, { id });
     }
 
     @Roles(UserRole.ADMIN, UserRole.MANAGER)
     @Mutation(() => GenreEntity, { nullable: true })
-    async deleteGenre(@Args() { id }: GenreArgs) {
+    async deleteGenre(@Args() { id }: GenreArgs): Promise<GenreEntity> {
         const genre = await this.genreService.findGenreById({ id });
 
         if (!genre) {
             throw new NotFoundException(GENRE_NOT_FOUND_ERROR);
         }
 
-        return await this.genreService.deleteGenre({ id });
+        await this.genreService.deleteGenre({ id });
+        
+        return genre;
     }
 
     @Roles(UserRole.ADMIN, UserRole.MANAGER)
