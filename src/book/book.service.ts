@@ -27,7 +27,7 @@ export class BookService {
         const genres_list = await this.genreRepo.findBy({ id: In(genres) });
         const authors_list = await this.authorRepo.findBy({ id: In(authors) });
         const book = this.bookRepo.create({
-            name,
+            name: name.toLowerCase().trim(),
             authors: authors_list,
             genres: genres_list,
         });
@@ -44,7 +44,7 @@ export class BookService {
 
         const book = await this.bookRepo.findOne({ where: { id } });
 
-        book.name = name;
+        book.name = name.toLowerCase().trim();
         book.authors = authors_list;
         book.genres = genres_list;
 

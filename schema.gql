@@ -53,7 +53,7 @@ type Mutation {
   deleteAuthor(id: Float!): AuthorEntity
   createBook(createBookData: CreateBookInput!): BookEntity!
   updateBook(updateBookData: UpdateBookInput!, id: Float!): BookEntity!
-  deleteBook(id: Float!): BookEntity!
+  deleteBook(id: Float!): BookEntity
 }
 
 input AuthUser {

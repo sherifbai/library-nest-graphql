@@ -14,7 +14,7 @@ export class AuthorService {
     ) {}
 
     async createAuthor({ name }: CreateAuthorInput): Promise<AuthorEntity> {
-        const author = this.authorRepo.create({ name });
+        const author = this.authorRepo.create({ name: name.toLowerCase().trim() });
 
         return await this.authorRepo.save(author);
     }
@@ -27,7 +27,7 @@ export class AuthorService {
         { id }: AuthorArgs,
         { name }: UpdateAuthorInput,
     ): Promise<AuthorEntity> {
-        await this.authorRepo.update(id, { name });
+        await this.authorRepo.update(id, { name: name.toLowerCase().trim() });
 
         return await this.authorRepo.findOne({ where: { id } });
     }

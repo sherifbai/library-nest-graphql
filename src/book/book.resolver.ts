@@ -43,7 +43,7 @@ export class BookResolver {
 
     @UseGuards(JWTAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN, UserRole.MANAGER)
-    @Mutation(() => BookEntity)
+    @Mutation(() => BookEntity, { nullable: true })
     async deleteBook(@Args() { id }: BookArgs) {
         const book = await this.bookService.getBookById({ id });
 

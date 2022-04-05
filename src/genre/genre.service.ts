@@ -14,7 +14,7 @@ export class GenreService {
     ) {}
 
     async createGenre({ name }: CreateGenreInput): Promise<GenreEntity> {
-        const genre = await this.genreRepo.create({ name });
+        const genre = await this.genreRepo.create({ name: name.toLowerCase().trim() });
 
         return await this.genreRepo.save(genre);
     }
@@ -24,7 +24,7 @@ export class GenreService {
     }
 
     async updateGenre({ name }: UpdateGenreInput, { id }: GenreArgs): Promise<GenreEntity> {
-        await this.genreRepo.update(id, { name });
+        await this.genreRepo.update(id, { name: name.toLowerCase().trim() });
         return await this.genreRepo.findOne({ where: { id } });
     }
 
