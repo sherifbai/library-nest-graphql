@@ -53,6 +53,10 @@ type Mutation {
   deleteAuthor(id: Float!): AuthorEntity
   createBook(createBookData: CreateBookInput!): BookEntity!
   updateBook(updateBookData: UpdateBookInput!, id: Float!): BookEntity!
+  addAuthorToTheBook(id: Float!, authorsData: ActionAuthorInTheBook!): BookEntity!
+  addGenreToTheBook(id: Float!, genresData: ActionGenreInTheBook!): BookEntity!
+  deleteAuthorFromTheBook(id: Float!, authorsData: ActionAuthorInTheBook!): BookEntity!
+  deleteGenreFromTheBook(id: Float!, genresData: ActionGenreInTheBook!): BookEntity!
   deleteBook(id: Float!): BookEntity
 }
 
@@ -87,4 +91,12 @@ input UpdateBookInput {
   name: String!
   genres: [Float!]!
   authors: [Float!]!
+}
+
+input ActionAuthorInTheBook {
+  authors: [Float!]!
+}
+
+input ActionGenreInTheBook {
+  genres: [Float!]!
 }

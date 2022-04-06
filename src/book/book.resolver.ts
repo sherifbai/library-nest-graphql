@@ -1,3 +1,4 @@
+import { ActionGenreInTheBook } from './dto/inputs/action.genre.in.the.book';
 import { JWTAuthGuard } from './../user/guards/jwt.guard';
 import { BOOK_NOT_FOUND_ERROR } from './errors/book.error.constants';
 import { NotFoundException, UseGuards } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { BookService } from './book.service';
 import { RolesGuard } from 'src/user/guards/roles.guard';
 import { Roles } from 'src/user/decorators/roles.decorator';
 import { UserRole } from 'src/user/user.entity';
+import { ActionAuthorInTheBook } from './dto/inputs/action.author.in.the.book';
 
 @Resolver()
 export class BookResolver {
@@ -38,6 +40,76 @@ export class BookResolver {
         return await this.bookService.updateBook(
             { id },
             { name, authors, genres },
+        );
+    }
+
+    @UseGuards(JWTAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    @Mutation(() => BookEntity)
+    async addAuthorToTheBook(
+        @Args() { id }: BookArgs,
+        @Args('authorsData') { authors }: ActionAuthorInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookService.getBookById({ id });
+
+        if (!book) {
+            throw new NotFoundException(BOOK_NOT_FOUND_ERROR);
+        }
+
+        return await this.bookService.addAuthorToTheBook({ id }, { authors });
+    }
+
+    @UseGuards(JWTAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    @Mutation(() => BookEntity)
+    async addGenreToTheBook(
+        @Args() { id }: BookArgs,
+        @Args('genresData') { genres }: ActionGenreInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookService.getBookById({ id });
+
+        if (!book) {
+            throw new NotFoundException(BOOK_NOT_FOUND_ERROR);
+        }
+
+        return await this.bookService.addGenreToTheBook({ id }, { genres });
+    }
+
+    @UseGuards(JWTAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    @Mutation(() => BookEntity)
+    async deleteAuthorFromTheBook(
+        @Args() { id }: BookArgs,
+        @Args('authorsData') { authors }: ActionAuthorInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookService.getBookById({ id });
+
+        if (!book) {
+            throw new NotFoundException(BOOK_NOT_FOUND_ERROR);
+        }
+
+        return await this.bookService.deleteAuthorFromTheBook(
+            { id },
+            { authors },
+        );
+    }
+
+    @UseGuards(JWTAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN, UserRole.MANAGER)
+    @Mutation(() => BookEntity)
+    async deleteGenreFromTheBook(
+        @Args() { id }: BookArgs,
+        @Args('genresData') { genres }: ActionGenreInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookService.getBookById({ id });
+
+        if (!book) {
+            throw new NotFoundException(BOOK_NOT_FOUND_ERROR);
+        }
+
+        return await this.bookService.deleteGenreFromTheBook(
+            { id },
+            { genres },
         );
     }
 

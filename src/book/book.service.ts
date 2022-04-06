@@ -1,3 +1,4 @@
+import { ActionGenreInTheBook } from './dto/inputs/action.genre.in.the.book';
 import { UpdateBookInput } from './dto/inputs/update.book.input';
 import { GenreEntity } from './../genre/genre.entity';
 import { AuthorEntity } from './../author/author.entity';
@@ -7,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult, In } from 'typeorm';
 import { BookEntity } from './book.entity';
 import { BookArgs } from './dto/args/book.args';
+import { ActionAuthorInTheBook } from './dto/inputs/action.author.in.the.book';
 
 @Injectable()
 export class BookService {
@@ -42,11 +44,76 @@ export class BookService {
         const authors_list = await this.authorRepo.findBy({ id: In(authors) });
         const genres_list = await this.genreRepo.findBy({ id: In(genres) });
 
-        const book = await this.bookRepo.findOne({ where: { id } });
+        const book = await this.bookRepo.findOne({
+            where: { id },
+            relations: ['genres', 'authors'],
+        });
 
         book.name = name.toLowerCase().trim();
-        book.authors = authors_list;
-        book.genres = genres_list;
+        book.authors = Array.from(new Set(book.authors.concat(authors_list)));
+        book.genres = Array.from(new Set(book.genres.concat(genres_list)));
+
+        return await this.bookRepo.save(book);
+    }
+
+    async addAuthorToTheBook(
+        { id }: BookArgs,
+        { authors }: ActionAuthorInTheBook,
+    ): Promise<BookEntity> {
+        const authors_list = await this.authorRepo.findBy({ id: In(authors) });
+
+        const book = await this.bookRepo.findOne({
+            where: { id },
+            relations: ['genres', 'authors'],
+        });
+
+        book.authors = Array.from(new Set(book.authors.concat(authors_list)));
+
+        return await this.bookRepo.save(book);
+    }
+
+    async addGenreToTheBook(
+        { id }: BookArgs,
+        { genres }: ActionGenreInTheBook,
+    ): Promise<BookEntity> {
+        const genres_list = await this.genreRepo.findBy({ id: In(genres) });
+
+        const book = await this.bookRepo.findOne({
+            where: { id },
+            relations: ['genres', 'authors'],
+        });
+
+        book.genres = Array.from(new Set(book.genres.concat(genres_list)));
+
+        return await this.bookRepo.save(book);
+    }
+
+    async deleteAuthorFromTheBook(
+        { id }: BookArgs,
+        { authors }: ActionAuthorInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookRepo.findOne({
+            where: { id },
+            relations: ['genres', 'authors'],
+        });
+        book.authors = book.authors.filter((el) => {
+            return !authors.some((author) => author === el.id);
+        });
+
+        return await this.bookRepo.save(book);
+    }
+
+    async deleteGenreFromTheBook(
+        { id }: BookArgs,
+        { genres }: ActionGenreInTheBook,
+    ): Promise<BookEntity> {
+        const book = await this.bookRepo.findOne({
+            where: { id },
+            relations: ['genres', 'authors'],
+        });
+        book.genres = book.genres.filter((el) => {
+            return !genres.some((genre) => genre === el.id);
+        });
 
         return await this.bookRepo.save(book);
     }
