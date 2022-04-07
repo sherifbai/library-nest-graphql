@@ -1,6 +1,6 @@
 import { GenreEntity } from './../genre/genre.entity';
 import { AuthorEntity } from './../author/author.entity';
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @Entity({ name: 'books' })
@@ -23,4 +23,13 @@ export class BookEntity {
     @JoinTable({ name: 'books_genres' })
     @Field(() => [GenreEntity])
     genres: GenreEntity[];
+
+    @CreateDateColumn({ type: 'timestamp' })
+    created_at: Date;
+
+    @UpdateDateColumn({ type: 'timestamp' })
+    updated_at: Date;
+
+    @DeleteDateColumn({ type: 'timestamp' })
+    deleted_at: Date;
 }

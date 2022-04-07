@@ -1,3 +1,4 @@
+import { GraphQLResolveInfo } from 'graphql';
 import { ActionGenreInTheBook } from './dto/inputs/action.genre.in.the.book';
 import { UpdateBookInput } from './dto/inputs/update.book.input';
 import { GenreEntity } from './../genre/genre.entity';
@@ -9,6 +10,7 @@ import { Repository, DeleteResult, In } from 'typeorm';
 import { BookEntity } from './book.entity';
 import { BookArgs } from './dto/args/book.args';
 import { ActionAuthorInTheBook } from './dto/inputs/action.author.in.the.book';
+import { PerchQueryBuilder } from 'perch-query-builder';
 
 @Injectable()
 export class BookService {
@@ -129,7 +131,7 @@ export class BookService {
         });
     }
 
-    async getBooks(): Promise<BookEntity[]> {
-        return await this.bookRepo.find({ relations: ['genres', 'authors'] });
+    async getBooks(query): Promise<BookEntity[]> {
+        return await this.bookRepo.createQueryBuilder('books').select(query).getRawMany();
     }
 }
