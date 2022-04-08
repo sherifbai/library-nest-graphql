@@ -6,7 +6,7 @@ import { UpdateBookInput } from './dto/inputs/update.book.input';
 import { BookArgs } from './dto/args/book.args';
 import { CreateBookInput } from './dto/inputs/create.book.input';
 import { BookEntity } from './book.entity';
-import { Args, Info, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BookService } from './book.service';
 import { RolesGuard } from 'src/user/guards/roles.guard';
 import { Roles } from 'src/user/decorators/roles.decorator';
@@ -129,9 +129,8 @@ export class BookResolver {
     }
 
     @Query(() => [BookEntity])
-    async getBooks(@Info() info: any): Promise<BookEntity[]> {
-        const query = info.fieldNodes[0].selectionSet.selections.map(item => item.name.value);
-        return await this.bookService.getBooks(query);
+    async getBooks(): Promise<BookEntity[]> {
+        return await this.bookService.getBooks();
     }
 
     @Query(() => BookEntity)

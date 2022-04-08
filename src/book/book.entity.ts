@@ -16,7 +16,7 @@ export class BookEntity {
 
     @ManyToMany(() => AuthorEntity, authors => authors.id, { cascade: true })
     @JoinTable({ name: 'books_authors' })
-    @Field(() => [AuthorEntity])
+    @Field(() => [AuthorEntity!])
     authors: AuthorEntity[];
 
     @ManyToMany(() => GenreEntity, genres => genres.id, { cascade: true })

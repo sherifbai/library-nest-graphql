@@ -1,4 +1,3 @@
-import { GraphQLResolveInfo } from 'graphql';
 import { ActionGenreInTheBook } from './dto/inputs/action.genre.in.the.book';
 import { UpdateBookInput } from './dto/inputs/update.book.input';
 import { GenreEntity } from './../genre/genre.entity';
@@ -6,11 +5,10 @@ import { AuthorEntity } from './../author/author.entity';
 import { CreateBookInput } from './dto/inputs/create.book.input';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeleteResult, In } from 'typeorm';
+import { Repository, DeleteResult } from 'typeorm';
 import { BookEntity } from './book.entity';
 import { BookArgs } from './dto/args/book.args';
 import { ActionAuthorInTheBook } from './dto/inputs/action.author.in.the.book';
-import { PerchQueryBuilder } from 'perch-query-builder';
 
 @Injectable()
 export class BookService {
@@ -28,8 +26,8 @@ export class BookService {
         authors,
         genres,
     }: CreateBookInput): Promise<BookEntity> {
-        const genres_list = await this.genreRepo.findBy({ id: In(genres) });
-        const authors_list = await this.authorRepo.findBy({ id: In(authors) });
+        const genres_list = await this.genreRepo.findByIds(genres);
+        const authors_list = await this.authorRepo.findByIds(authors);
         const book = this.bookRepo.create({
             name: name.toLowerCase().trim(),
             authors: authors_list,
@@ -43,8 +41,8 @@ export class BookService {
         { id }: BookArgs,
         { name, genres, authors }: UpdateBookInput,
     ): Promise<BookEntity> {
-        const authors_list = await this.authorRepo.findBy({ id: In(authors) });
-        const genres_list = await this.genreRepo.findBy({ id: In(genres) });
+        const genres_list = await this.genreRepo.findByIds(genres);
+        const authors_list = await this.authorRepo.findByIds(authors);
 
         const book = await this.bookRepo.findOne({
             where: { id },
@@ -62,7 +60,7 @@ export class BookService {
         { id }: BookArgs,
         { authors }: ActionAuthorInTheBook,
     ): Promise<BookEntity> {
-        const authors_list = await this.authorRepo.findBy({ id: In(authors) });
+        const authors_list = await this.authorRepo.findByIds(authors);
 
         const book = await this.bookRepo.findOne({
             where: { id },
@@ -78,7 +76,7 @@ export class BookService {
         { id }: BookArgs,
         { genres }: ActionGenreInTheBook,
     ): Promise<BookEntity> {
-        const genres_list = await this.genreRepo.findBy({ id: In(genres) });
+        const genres_list = await this.genreRepo.findByIds(genres);;
 
         const book = await this.bookRepo.findOne({
             where: { id },
@@ -131,7 +129,7 @@ export class BookService {
         });
     }
 
-    async getBooks(query): Promise<BookEntity[]> {
-        return await this.bookRepo.createQueryBuilder('books').select(query).getRawMany();
+    async getBooks(): Promise<BookEntity[]> {
+        return await this.bookRepo.find({ relations: ['authors', 'genres'] })
     }
 }
